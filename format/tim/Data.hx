@@ -38,12 +38,12 @@ enum TIMFormat {
 
 typedef TIM = {
 	var header : TIMHeader;
-  var palette : haxe.io.Bytes;
+  var palettes : haxe.io.Bytes;
 	var image : haxe.io.Bytes;
 }
 
 typedef TIMHeader = {
-	var format : TIMFormat;
+	var imageFormat : TIMFormat;
   var imageOrgX : Int;
   var imageOrgY : Int;
   var imageWidth : Int;

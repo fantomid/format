@@ -31,7 +31,7 @@ package format.tim;
 import format.tim.Data;
 
 class Tools {
-  static var magicNumber = 0x10;
+  static public var magicNumber = 0x10;
   static var paletted_4_BPP = 0x08;
   static var paletted_8_BPP = 0x09;
   static var trueColor_16_BPP = 0x02;
@@ -44,7 +44,7 @@ class Tools {
       return false;
   }
   
-  static public function getImageFormat(format : Int) : TIMFormat {
+  static public function toImageFormat(format : Int) : TIMFormat {
     if(paletted_4_BPP == format)
       return TF_Paletted_4_BPP;
     if(paletted_8_BPP == format)
@@ -56,8 +56,20 @@ class Tools {
     throw "unknown TIM image format: " + format;
   }
   
+  static public function fromImageFormat(imageFormat : TIMFormat) : Int {
+    if(TF_Paletted_4_BPP == imageFormat)
+      return paletted_4_BPP;
+    if(TF_Paletted_8_BPP == imageFormat)
+      return paletted_8_BPP;
+    if(TF_TrueColor_16_BPP == imageFormat)
+      return trueColor_16_BPP;
+    if(TF_TrueColor_24_BPP == imageFormat)
+      return trueColor_24_BPP;
+    throw "unknown TIM image format: " + imageFormat;
+  }
+  
   static public function dumpHeader(image : TIM) : Void {
-    trace("format: " + image.header.format);
+    trace("format: " + image.header.imageFormat);
     trace("image Org (X, Y): (" + image.header.imageOrgX + "," 
       + image.header.imageOrgY + ")");
     trace("width: " + image.header.imageWidth);

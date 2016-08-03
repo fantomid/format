@@ -49,12 +49,11 @@ class Reader {
 	}
 	
 	public function read() : TIM {
-
   	if(!Tools.checkMagicNumber(readInt()))
 			throw "TIM header expected";
 
     var format = readInt();
-    var imageFormat = Tools.getImageFormat(format);
+    var imageFormat = Tools.toImageFormat(format);
     
     var imageOrgX = -1;
     var imageOrgY = -1;
@@ -64,7 +63,7 @@ class Reader {
     var paletteOrgY = -1;
     var clutColorsNum = -1;
     var clutNum = -1;
-    var palette : haxe.io.Bytes = null;
+    var palettes : haxe.io.Bytes = null;
     var data : haxe.io.Bytes = null;
     if(TF_Paletted_4_BPP == imageFormat || TF_Paletted_8_BPP == imageFormat)
     {
@@ -73,7 +72,7 @@ class Reader {
       paletteOrgY = i.readUInt16();
       clutColorsNum = i.readUInt16();
       clutNum = i.readUInt16();
-      palette = i.read(clutSize - 12);
+      palettes = i.read(clutSize - 12);
     }
 
     var imageSize = readInt();
@@ -93,7 +92,7 @@ class Reader {
     
 		return {
 			header: {
-        format: imageFormat,
+        imageFormat: imageFormat,
         imageOrgX: imageOrgX,
         imageOrgY: imageOrgY,
         imageWidth: imageWidth,
@@ -103,7 +102,7 @@ class Reader {
         clutColorsNum: clutColorsNum,
         clutNum: clutNum
 			},
-      palette: palette,
+      palettes: palettes,
 			image: data
 		}
 	}
