@@ -32,12 +32,6 @@ import format.tim.Data;
 
 class Reader {
 
-  var magicNumber = 0x10;
-  var paletted_4_BPP = 0x08;
-  var paletted_8_BPP = 0x09;
-  var trueColor_16_BPP = 0x02;
-  var trueColor_24_BPP = 0x03;
-  
 	var i : haxe.io.Input;
 	var version : Int;
 
@@ -56,17 +50,11 @@ class Reader {
 	
 	public function read() : TIM {
 
-  	if (readInt() != magicNumber)
+  	if(!Tools.checkMagicNumber(readInt()))
 			throw "TIM header expected";
 
     var format = readInt();
-    var imageFormat = switch (format) {
-      case paletted_4_BPP: TF_Paletted_4_BPP;
-      case paletted_8_BPP: TF_Paletted_8_BPP;
-      /*case trueColor_16_BPP: TF_TrueColor_16_BPP;
-      case trueColor_24_BPP: throw "unsupported TIM image type" + trueColor_24_BPP;
-      default: throw "unknown TIM image type";*/
-    }
+    var imageFormat = Tools.getImageFormat(format);
     
     var imageOrgX = -1;
     var imageOrgY = -1;
@@ -76,8 +64,8 @@ class Reader {
     var paletteOrgY = -1;
     var clutColorsNum = -1;
     var clutNum = -1;
-    var palette : haxe.io.Bytes;
-    var data : haxe.io.Bytes;
+    var palette : haxe.io.Bytes = null;
+    var data : haxe.io.Bytes = null;
     if(TF_Paletted_4_BPP == imageFormat || TF_Paletted_8_BPP == imageFormat)
     {
       var clutSize = readInt();
@@ -93,13 +81,12 @@ class Reader {
     imageOrgY = i.readUInt16();
     imageWidth = i.readUInt16();
     
-    switch(imageFormat) {
-      case TF_Paletted_4_BPP: imageWidth *= 4;
-      case TF_Paletted_8_BPP: imageWidth *= 2;
-      // case TF_TrueColor_16_BPP - imageWidth is already correct
-      // case TF_TrueColor_24_BPP - TODO when supported
-
-    }
+    if(TF_Paletted_4_BPP == imageFormat)
+      imageWidth *= 4;
+    if(TF_Paletted_8_BPP == imageFormat)
+      imageWidth *= 2;
+    // case TF_TrueColor_16_BPP - imageWidth is already correct
+    // case TF_TrueColor_24_BPP - TODO when supported
 
     imageHeight = i.readUInt16();
     data = i.read(imageSize - 12);
