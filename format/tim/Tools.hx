@@ -79,6 +79,14 @@ class Tools {
     trace("colors by clut: " + image.header.clutColorsNum);
     trace("clut number: " + image.header.clutNum);
   }
+  
+  static public function getImageSize(f : sys.io.FileInput) : { width: Int, height: Int} {
+    // TODO
+    var w = -1;
+    var h = -1;
+    
+    return {width: w, height: h};
+  }
 }
 
 
