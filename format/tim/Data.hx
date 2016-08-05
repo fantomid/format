@@ -51,7 +51,7 @@ typedef TIMHeader = {
   var paletteOrgX : Int;
   var paletteOrgY : Int;
   var clutColorsNum : Int;
-  var clutNum : Int;
+  var clutsNum : Int;
 }
 
 

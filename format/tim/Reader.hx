@@ -62,7 +62,7 @@ class Reader {
     var paletteOrgX = -1;
     var paletteOrgY = -1;
     var clutColorsNum = -1;
-    var clutNum = -1;
+    var clutsNum = -1;
     var palettes : haxe.io.Bytes = null;
     var data : haxe.io.Bytes = null;
     if(TF_Paletted_4_BPP == imageFormat || TF_Paletted_8_BPP == imageFormat)
@@ -71,7 +71,7 @@ class Reader {
       paletteOrgX = i.readUInt16();
       paletteOrgY = i.readUInt16();
       clutColorsNum = i.readUInt16();
-      clutNum = i.readUInt16();
+      clutsNum = i.readUInt16();
       palettes = i.read(clutSize - 12);
     }
 
@@ -100,7 +100,7 @@ class Reader {
         paletteOrgX:  paletteOrgX,
         paletteOrgY: paletteOrgY,
         clutColorsNum: clutColorsNum,
-        clutNum: clutNum
+        clutsNum: clutsNum
 			},
       palettes: palettes,
 			image: data

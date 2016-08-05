@@ -77,7 +77,7 @@ class Tools {
     trace("palette Org (X,Y): (" + image.header.paletteOrgX + "," 
       + image.header.paletteOrgY + ")");
     trace("colors by clut: " + image.header.clutColorsNum);
-    trace("clut number: " + image.header.clutNum);
+    trace("clut number: " + image.header.clutsNum);
   }
   
   static public function getImageSize(f : sys.io.FileInput) : { width: Int, height: Int} {
