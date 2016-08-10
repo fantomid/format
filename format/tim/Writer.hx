@@ -58,7 +58,7 @@ class Writer {
       o.write(tim.palettes);
     }
     
-    var imageSize = tim.image.length + 12;
+    var imageSize = tim.buffer.length + 12;
     writeInt(imageSize);
     o.writeUInt16(tim.header.imageOrgX);
     o.writeUInt16(tim.header.imageOrgY);
@@ -72,7 +72,7 @@ class Writer {
     // case TF_TrueColor_24_BPP - TODO when supported
     o.writeUInt16(imageWidth);
     o.writeUInt16(tim.header.imageHeight);
-    o.write(tim.image);
+    o.write(tim.buffer);
 	}
 	
  

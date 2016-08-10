@@ -103,7 +103,7 @@ class Reader {
         clutsNum: clutsNum
 			},
       palettes: palettes,
-			image: data
+			buffer: data
 		}
 	}
 
