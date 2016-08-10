@@ -145,9 +145,7 @@ class Tools {
    // TODO
   public static function extractFullBGRA(data: TIM):Bytes
   {
-    var bytes:Bytes = Bytes.alloc(data.header.imageWidth * data.header.imageHeight);
-    
-    return bytes;
+    return extractFull(data, PixelFormat_BGRA);
   }
   
   /**
