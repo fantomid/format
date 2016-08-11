@@ -111,7 +111,12 @@ class Tools {
   
 	/* TODO PixelFormat
     private static function getPixel(color: Int, format: PixelFormat) : Bytes{
-		var pixel:Bytes = new 
+		var pixel:Bytes;
+    if(format = PixelFormat_RGBA || format = PixelFormat_BGRA)
+    {
+      pixel = Bytes.alloc(4);
+    }
+    
     var red: Int = (color & 0x1f) << 3; // R
     red <<= 24;
 		var green: Int = ((color >> 5) & 0x1f) << 3; // G
@@ -120,7 +125,25 @@ class Tools {
     blue <<= 8;
 		var alpha: Int = if(color == 0) 0; else 0xff; // A
     
-    return blue | green | red | alpha;
+    if(format = PixelFormat_RGBA)
+    {
+      pixel.set(0, red);
+      pixel.set(1, green);
+      pixel.set(2, blue);
+      pixel.set(3, alpha);
+    }
+    else
+    {
+      if(format == PixelFormat_BGRA)
+      {
+        pixel.set(0, blue);
+        pixel.set(1, green);
+        pixel.set(2, red);
+        pixel.set(3, alpha);
+      }
+    }
+    
+    return pixel;
 	}*/
   
   /**
@@ -133,6 +156,67 @@ class Tools {
   private static function extractFull(data: TIM, pixelFmt: PixelFormat):Bytes
   {
     var bytes:Bytes = Bytes.alloc(data.header.imageWidth * data.header.imageHeight);
+    
+      var height = 0;
+      var width = 0;
+      var index_buffer = 0;
+      var index_image_buffer = 0;
+      do
+      {
+        width = 0;
+        do
+        {
+          var pixel_data = data.buffer.getUInt16(index_buffer);
+          var pixels = getPixels(data, TF_Paletted_4_BPP, pixel_data, pixelFmt);
+          for(i in 0..pixels.length-1)
+          {
+            bytes.set(index_image_buffer++, pixels.get(i));
+          }
+          
+          index_buffer += 2;
+          width += 4;
+        }
+        while(width < data.header.imageWidth);
+        height++;
+      }
+      while(height < data.header.imageHeight);
+      
+    /*if(data.header.imageFormat == TF_Paletted_4_BPP) 
+    {
+      var height = 0;
+      var width = 0;
+      var index_buffer = 0;
+      var index_image_buffer = 0;
+      do
+      {
+        width = 0;
+        do
+        {
+          var c1c2c3c4 = data.buffer.getUInt16(index_buffer);
+          var pixel1 = getPixel(data.palettes.get(c1c2c3c4 & 0xf), pixelFmt);
+          var pixel2 = getPixel(data.palettes.get((c1c2c3c4 >> 4) & 0xf), pixelFmt);
+          var pixel3 = getPixel(data.palettes.get((c1c2c3c4 >> 8) & 0xf), pixelFmt);
+          var pixel4 = getPixel(data.palettes.get((c1c2c3c4 >> 12) & 0xf), pixelFmt);
+          
+          for(i in 0..pixel1.length-1)
+          {
+            bytes.set(index_image_buffer+0, pixel1.get(i));
+            bytes.set(index_image_buffer+4, pixel2.get(i));
+            bytes.set(index_image_buffer+8, pixel3.get(i));
+            bytes.set(index_image_buffer+12, pixel4.get(i));
+          }
+          index_image_buffer+= 16;
+          index_buffer += 2;
+          width += 4;
+
+        trace("p1 " + StringTools.hex(pixel1, 8) + " - p2 " + StringTools.hex(pixel2, 8) 
+          + " - p3 " + StringTools.hex(pixel3, 8) + " - p4 " + StringTools.hex(pixel4, 8));
+        }
+        while(width < data.header.imageWidth);
+        height++;
+      }
+      while(height < data.header.imageHeight);
+    }*/
     
     return bytes;
   }
@@ -153,9 +237,9 @@ class Tools {
    * @param Tim data.
    * @return RGBA pixel data.
    */
-   // TODO
   public static function extractFullRGBA(data:TIM):Bytes
   {
+    return extractFull(data, PixelFormat_RGBA);
     var size = data.header.imageWidth * data.header.imageHeight;
     var bytes:Bytes = Bytes.alloc(size * 4);
     
