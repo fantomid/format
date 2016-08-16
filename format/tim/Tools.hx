@@ -90,27 +90,27 @@ class Tools {
     trace("clut number: " + image.header.clutsNum);
     
     if(image.header.imageFormat == TF_Paletted_4_BPP || image.header.imageFormat == TF_Paletted_8_BPP)
+    {
       trace("clut size: " + image.palettes.length);
+    }
     trace("buffer size: " + image.buffer.length);
   }
   
-  private static function getPixels(data: TIM, pixelData: Int, pixelFmt: PixelFormat) : Bytes {
+  private static function getPixels(data: TIM, indexBuffer: Int, pixelFmt: PixelFormat) : Bytes {
     var pixels: Bytes;
+    var pixelData = data.buffer.getUInt16(indexBuffer);
     if(data.header.imageFormat == TF_Paletted_4_BPP)
     {
       pixels = Bytes.alloc(16);
-      var pixel1 = getPixel(data.palettes.get(pixelData & 0xf), pixelFmt);
-      var pixel2 = getPixel(data.palettes.get((pixelData >> 4) & 0xf), pixelFmt);
-      var pixel3 = getPixel(data.palettes.get((pixelData >> 8) & 0xf), pixelFmt);
-      var pixel4 = getPixel(data.palettes.get((pixelData >> 12) & 0xf), pixelFmt);      
-
-      for(i in 0...pixel1.length)
-      {
-        pixels.set(i, pixel1.get(i));
-        pixels.set(4+i, pixel2.get(i));
-        pixels.set(8+i, pixel3.get(i));
-        pixels.set(12+i, pixel4.get(i));
-      }
+      var pixel1 = getPixel(data.palettes.getUInt16(pixelData & 0xf), pixelFmt);
+      var pixel2 = getPixel(data.palettes.getUInt16((pixelData >> 4) & 0xf), pixelFmt);
+      var pixel3 = getPixel(data.palettes.getUInt16((pixelData >> 8) & 0xf), pixelFmt);
+      var pixel4 = getPixel(data.palettes.getUInt16((pixelData >> 12) & 0xf), pixelFmt);
+      
+      pixels.blit(0, pixel1, 0, pixel1.length);
+      pixels.blit(4, pixel2, 0, pixel2.length);
+      pixels.blit(8, pixel3, 0, pixel3.length);
+      pixels.blit(12, pixel4, 0, pixel4.length);
      
       return pixels;      
     }
@@ -119,15 +119,12 @@ class Tools {
       if(data.header.imageFormat == TF_Paletted_8_BPP)
       {
         pixels = Bytes.alloc(8);
-        var pixel1 = getPixel(data.palettes.get(pixelData & 0xf), pixelFmt);
-        var pixel2 = getPixel(data.palettes.get((pixelData >> 8) & 0xf), pixelFmt);
+        var pixel1 = getPixel(data.palettes.getUInt16(pixelData & 0xff), pixelFmt);
+        var pixel2 = getPixel(data.palettes.getUInt16((pixelData >> 8) & 0xff), pixelFmt);
 
-        for(i in 0...pixel1.length)
-        {
-          pixels.set(i, pixel1.get(i));
-          pixels.set(4+i, pixel2.get(i));
-        } 
-        
+        pixels.blit(0, pixel1, 0, pixel1.length);
+        pixels.blit(4, pixel2, 0, pixel2.length);
+
         return pixels;
       }
       else
@@ -157,10 +154,6 @@ class Tools {
 		var blue: Int = ((color >> 10) & 0x1f) << 3; // B
 		var alpha: Int = if(color == 0) 0; else 0xff; // A
     
-    trace("Red " + StringTools.hex(((color & 0x1f) << 3), 4));
-    trace("Green " + StringTools.hex((((color >> 5) & 0x1f) << 3), 4));
-    trace("Blue " + StringTools.hex((((color >> 10) & 0x1f) << 3), 4));
-    
     if(format == PixelFormat_RGBA || format == PixelFormat_BGRA)
     {
       pixel = Bytes.alloc(4);
@@ -171,9 +164,6 @@ class Tools {
         pixel.set(1, green);
         pixel.set(2, blue);
         pixel.set(3, alpha);
-        
-        trace("RGBA " + pixel.toHex());
-        
       }
       else
       {
@@ -181,8 +171,6 @@ class Tools {
           pixel.set(1, green);
           pixel.set(2, red);
           pixel.set(3, alpha);
-          
-        trace("BGRA " + pixel.toHex());
       }
      
       return pixel;
@@ -209,23 +197,34 @@ class Tools {
       width = 0;
       do
       {
-        var pixel_data = data.buffer.getUInt16(index_buffer);
-        var pixels = getPixels(data, pixel_data, pixelFmt);
-        for(i in 0...pixels.length-1)
+        var pixels = getPixels(data, index_buffer, pixelFmt);
+        for(i in 0...pixels.length)
         {
           bytes.set(index_image_buffer++, pixels.get(i));
         }
         
         index_buffer += 2;
-        width += 4;
+        if(data.header.imageFormat == TF_Paletted_4_BPP)
+        {
+          width += 4;
+        }
+        else
+        {
+          if(data.header.imageFormat == TF_Paletted_8_BPP)
+          {
+            width += 2;
+          }
+          else
+          {
+            width ++;
+          }
+        }
       }
       while(width < data.header.imageWidth);
       height++;
     }
     while(height < data.header.imageHeight);
-
-    trace("extractFull " + bytes.toHex());
-    
+   
     return bytes;
   }
   
