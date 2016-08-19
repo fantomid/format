@@ -27,9 +27,9 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGE.
  */
-package format.tim;
+package format.psx.tim;
 
-import format.tim.Data;
+import format.psx.tim.Data;
 import haxe.io.Bytes;
 
 import format.png.Data;

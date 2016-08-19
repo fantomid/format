@@ -1,7 +1,7 @@
 /*
  * format - haXe File Formats
  *
- *  CMP File Format
+ *  TIM File Format
  *  Copyright (C) 2016 Guillaume Gasnier
  *
  * Copyright (c) 2009, The haXe Project Contributors
@@ -27,11 +27,32 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGE.
  */
-package format.cmp;
-import format.tim.Data;
+package format.psx.tim;
 
-typedef CMP = {
-  var timsNum : Int;
-  var tims : Array<TIM>;
+enum TIMFormat {
+	TF_Paletted_4_BPP;
+  TF_Paletted_8_BPP;
+  TF_TrueColor_16_BPP;
+  TF_TrueColor_24_BPP;
 }
+
+typedef TIM = {
+	var header : TIMHeader;
+  var palettes : haxe.io.Bytes;
+	var buffer : haxe.io.Bytes;
+}
+
+typedef TIMHeader = {
+	var imageFormat : TIMFormat;
+  var imageOrgX : Int;
+  var imageOrgY : Int;
+  var imageWidth : Int;
+  var imageHeight : Int;
+  var paletteOrgX : Int;
+  var paletteOrgY : Int;
+  var clutColorsNum : Int;
+  var clutsNum : Int;
+}
+
+
 

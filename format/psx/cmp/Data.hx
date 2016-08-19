@@ -2,7 +2,7 @@
  * format - haXe File Formats
  *
  *  CMP File Format
- *  Copyright (C) 2015 Guillaume Gasnier
+ *  Copyright (C) 2016 Guillaume Gasnier
  *
  * Copyright (c) 2009, The haXe Project Contributors
  * All rights reserved.
@@ -27,31 +27,11 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGE.
  */
+package format.psx.cmp;
+import format.psx.tim.Data;
 
-package format.cmp;
-import format.cmp.Data;
-
-class Writer {
-
-	var o : haxe.io.Output;
-
-	public function new(output : haxe.io.Output) {
-		o = output;
-		o.bigEndian = false;
-	}
-
-	public function write(cmp : CMP) {
-    throw "Not implemented";
-    
-	}
-	
- 
-	inline function writeInt( v : Int ) {
-		#if haxe3
-		o.writeInt32(v);
-		#else
-		o.writeUInt30(v);
-		#end
-	}
-
+typedef CMP = {
+  var timsNum : Int;
+  var tims : Array<TIM>;
 }
+

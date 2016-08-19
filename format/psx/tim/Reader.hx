@@ -1,7 +1,7 @@
 /*
  * format - haXe File Formats
  *
- *  CMP File Format
+ *  TIM File Format
  *  Copyright (C) 2016 Guillaume Gasnier
  *
  * Copyright (c) 2009, The haXe Project Contributors
@@ -27,8 +27,8 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGE.
  */
-package format.cmp;
-import format.cmp.Data;
+package format.psx.tim;
+import format.psx.tim.Data;
 
 class Reader {
 
@@ -48,22 +48,63 @@ class Reader {
 		#end
 	}
 	
-	public function read() : CMP {
+	public function read() : TIM {
+  	if(!Tools.checkMagicNumber(readInt()))
+			throw "TIM header expected";
 
-    var timsNum = readInt();
-
-    trace("TIMs number " + timsNum);
-    var timsSizeArray = new Array<Int>();
-    for(i in 0 ... timsNum)
+    var format = readInt();
+    var imageFormat = Tools.toImageFormat(format);
+    
+    var imageOrgX = -1;
+    var imageOrgY = -1;
+    var imageWidth = -1;
+    var imageHeight = -1;
+    var paletteOrgX = -1;
+    var paletteOrgY = -1;
+    var clutColorsNum = -1;
+    var clutsNum = -1;
+    var palettes : haxe.io.Bytes = null;
+    var data : haxe.io.Bytes = null;
+    if(TF_Paletted_4_BPP == imageFormat || TF_Paletted_8_BPP == imageFormat)
     {
-      timsSizeArray[i] = readInt();
-      trace("TIM " + i + " size " + timsSizeArray[i]);
+      var clutSize = readInt();
+      paletteOrgX = i.readUInt16();
+      paletteOrgY = i.readUInt16();
+      clutColorsNum = i.readUInt16();
+      clutsNum = i.readUInt16();
+      palettes = i.read(clutSize - 12);
     }
-      
+
+    var imageSize = readInt();
+    imageOrgX = i.readUInt16();
+    imageOrgY = i.readUInt16();
+    imageWidth = i.readUInt16();
+    
+    if(TF_Paletted_4_BPP == imageFormat)
+      imageWidth *= 4;
+    if(TF_Paletted_8_BPP == imageFormat)
+      imageWidth *= 2;
+    // case TF_TrueColor_16_BPP - imageWidth is already correct
+    // case TF_TrueColor_24_BPP - TODO when supported
+
+    imageHeight = i.readUInt16();
+    data = i.read(imageSize - 12);
+    
 		return {
-      timsNum: timsNum,
-      tims: null
-    }
+			header: {
+        imageFormat: imageFormat,
+        imageOrgX: imageOrgX,
+        imageOrgY: imageOrgY,
+        imageWidth: imageWidth,
+        imageHeight: imageHeight,
+        paletteOrgX:  paletteOrgX,
+        paletteOrgY: paletteOrgY,
+        clutColorsNum: clutColorsNum,
+        clutsNum: clutsNum
+			},
+      palettes: palettes,
+			buffer: data
+		}
 	}
 
 }

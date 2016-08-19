@@ -1,8 +1,8 @@
 /*
  * format - haXe File Formats
  *
- *  TIM File Format
- *  Copyright (C) 2009 Guillaume Gasnier
+ *  PRM File Format
+ *  Copyright (C) 2016 Guillaume Gasnier
  *
  * Copyright (c) 2009, The haXe Project Contributors
  * All rights reserved.
@@ -28,8 +28,8 @@
  * DAMAGE.
  */
 
-package format.tim;
-import format.tim.Data;
+package format.psx.prm;
+import format.psx.prm.Data;
 
 class Writer {
 
@@ -40,39 +40,9 @@ class Writer {
 		o.bigEndian = false;
 	}
 
-	public function write(tim : TIM) {
-    var magicNumber = Tools.magicNumber;
-    var format = Tools.fromImageFormat(tim.header.imageFormat);
+	public function write(prm : PRM) {
+    throw "Not implemented";
     
-    writeInt(magicNumber);
-    writeInt(format);
-    if(TF_Paletted_4_BPP == tim.header.imageFormat 
-      || TF_Paletted_8_BPP == tim.header.imageFormat) {
-      
-      var clutSize = tim.palettes.length + 12;
-      writeInt(clutSize);
-      o.writeUInt16(tim.header.paletteOrgX);
-      o.writeUInt16(tim.header.paletteOrgY);
-      o.writeUInt16(tim.header.clutColorsNum);
-      o.writeUInt16(tim.header.clutsNum);
-      o.write(tim.palettes);
-    }
-    
-    var imageSize = tim.buffer.length + 12;
-    writeInt(imageSize);
-    o.writeUInt16(tim.header.imageOrgX);
-    o.writeUInt16(tim.header.imageOrgY);
-    
-    var imageWidth = tim.header.imageWidth;
-    if(TF_Paletted_4_BPP == tim.header.imageFormat)
-      imageWidth = Std.int(imageWidth / 4);
-    if(TF_Paletted_8_BPP == tim.header.imageFormat)
-      imageWidth = Std.int( imageWidth / 2);
-    // case TF_TrueColor_16_BPP - imageWidth is already correct
-    // case TF_TrueColor_24_BPP - TODO when supported
-    o.writeUInt16(imageWidth);
-    o.writeUInt16(tim.header.imageHeight);
-    o.write(tim.buffer);
 	}
 	
  
