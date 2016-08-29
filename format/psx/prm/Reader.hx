@@ -29,6 +29,7 @@
  */
 package format.psx.prm;
 import format.psx.prm.Data;
+import format.psx.prm.Tools;
 
 class Reader {
 
@@ -37,7 +38,7 @@ class Reader {
 
 	public function new(i) {
 		this.i = i;
-		i.bigEndian = false;
+		i.bigEndian = true;
 	}
 	
 	inline function readInt() {
@@ -51,10 +52,70 @@ class Reader {
 	public function read() : PRM {
 
     var objectsNum = 0;
+    var objects : Array<Object> = new Array();
+    try {
+      /*while(true)
+      {*/
+        var object : Object = new Object(i);
+        objects.push(object);
+        objectsNum++;
+      //}
+      trace(object.toString());
+    }
+    catch(EndOfFile: haxe.io.Eof)
+    {
+      
+    }
+/*
+	Struct.string('name', 15),
+	Struct.skip(1),
+	Struct.uint16('vertexCount'),
+	Struct.skip(14),
+	Struct.uint16('polygonCount'),
+	Struct.skip(20),
+	Struct.uint16('index1'),
+	Struct.skip(28),
+	Struct.struct('origin', Wipeout.Vector3),
+	Struct.skip(20),
+	Struct.struct('position', Wipeout.Vector3),
+	Struct.skip(16)
+*/
+  var name : String;
+  var skip1: haxe.io.Bytes;
+  var vertexCount : Int;
+  var skip14: haxe.io.Bytes;
+  var polygonCount : Int;
+  var skip20: haxe.io.Bytes;
+  var index1 : Int;
+  var skip28: haxe.io.Bytes;
+  var origin : Vector3;
+  var skip20b: haxe.io.Bytes;
+  var position : Vector3;
+  var skip16: haxe.io.Bytes;    
+/*
+	var initialOffset = offset;
+
+	var header = Wipeout.ObjectHeader.readStructs(buffer, offset, 1)[0];
+	offset += Wipeout.ObjectHeader.byteLength;
+	
+	var vertices = Wipeout.Vertex.readStructs(buffer, offset, header.vertexCount);
+	offset += Wipeout.Vertex.byteLength * header.vertexCount;
+
+	var polygons = [];
+	for( var i = 0; i < header.polygonCount; i++ ) {
+		// Peek into the header first to select the right Polygon type
+		var polygonHeader = Wipeout.PolygonHeader.readStructs(buffer, offset, 1)[0];
+
+		var PolygonType = Wipeout.Polygon[polygonHeader.type];
+		var polygon = PolygonType.readStructs(buffer, offset, 1)[0];
+		offset += PolygonType.byteLength;
+
+		polygons.push(polygon);
+*/    
 
 		return {
       objectsNum: objectsNum,
-      objects: null
+      objects: objects
     }
 	}
 

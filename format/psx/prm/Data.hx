@@ -48,10 +48,30 @@ typedef PRM = {
   var objects : Array<Object>;
 }
 
-typedef Object = {
+class Object {
   var header : ObjectHeader;
   var vertices : Array<Vertex>;
   var polygons : Array<Polygon>;
+  
+  public function new(input: haxe.io.Input)
+  {
+    this.header = new ObjectHeader(input);
+    var num_vertices = header.vertexCount;
+    if(num_vertices > 0)
+      vertices = new Array();
+    for(i in 0...num_vertices)
+    {
+      var v = new Vertex(input);
+      vertices.push(v);
+    }
+    this.polygons = null;
+  }
+  
+  public function toString() {
+    return "vertrices " + header.vertexCount +
+      " polygons " + header.polygonCount +
+      " array vertrices count " + vertices.length;
+  }  
 }
 
 class Polygon
@@ -200,7 +220,7 @@ class SpriteBottomAnchorPolygon extends Polygon
   // = 6 UInt16
 }
 
-typedef Vector3 = {
+class Vector3 {
 /*
 	Struct.int32('x'),
 	Struct.int32('y'),
@@ -209,9 +229,20 @@ typedef Vector3 = {
   var x : Int;
   var y : Int;
   var z : Int;
+  
+  public function new(input: haxe.io.Input)
+  {
+    this.x = Tools.readInt(input);
+    this.y = Tools.readInt(input);
+    this.z = Tools.readInt(input);
+  }
+
+  public function toString() {
+    return "Vector3("+x+","+y+","+z+")";
+  }  
 }
 
-typedef Vertex = {
+class Vertex {
 /*
 	Struct.int16('x'),
 	Struct.int16('y'),
@@ -221,18 +252,41 @@ typedef Vertex = {
   var x : Int; // Int16
   var y : Int; // Int16
   var z : Int; // Int16
+  var padding : Int; // Int16
+  
+  public function new(input: haxe.io.Input)
+  {
+    this.x = input.readInt16();
+    this.y = input.readInt16();
+    this.z = input.readInt16();
+    this.padding = input.readInt16();
+  }
+  
+  public function toString() {
+    return "Vertex("+x+","+y+","+z+")";
+  }  
 }
 
-typedef TexUV = {
+class TexUV {
 /*
 	Struct.uint8('u'),
 	Struct.uint8('v')
 */
   var u : Int;
   var v : Int;
+  
+  public function new(input: haxe.io.Input)
+  {
+    this.u = input.readByte();
+    this.v = input.readByte();
+  }
+  
+  public function toString() {
+    return "UV("+u+","+v+")";
+  }  
 }
 
-typedef ObjectHeader = {
+class ObjectHeader {
 /*
 	Struct.string('name', 15),
 	Struct.skip(1),
@@ -247,12 +301,34 @@ typedef ObjectHeader = {
 	Struct.struct('position', Wipeout.Vector3),
 	Struct.skip(16)
 */
-  var name : String;
-  var vertexCount : Int;
-  var polygonCount : Int;
-  var index1 : Int;
-  var origin : Vector3;
-  var position : Vector3;
+  public var name(default, null): haxe.io.Bytes;
+  var skip1: Int;
+  public var vertexCount(default, null): Int;
+  var skip14: haxe.io.Bytes;
+  public var polygonCount(default, null): Int;
+  var skip20: haxe.io.Bytes;
+  public var index1(default, null): Int;
+  var skip28: haxe.io.Bytes;
+  public var origin(default, null): Vector3;
+  var skip20b: haxe.io.Bytes;
+  public var position(default, null): Vector3;
+  var skip16: haxe.io.Bytes;
+  
+  public function new(input: haxe.io.Input)
+  {
+    this.name = input.read(Tools.s_ObjectNameNbBytes);
+    this.skip1 = input.readByte();
+    this.vertexCount = input.readUInt16();
+    this.skip14 = input.read(14);
+    this.polygonCount = input.readUInt16();
+    this.skip20 = input.read(20);
+    this.index1 = input.readUInt16();
+    this.skip28 = input.read(28);
+    this.origin = new Vector3(input);
+    this.skip20b = input.read(20);
+    this.position = new Vector3(input);
+    this.skip16  = input.read(16);
+  }
 }
 
 typedef PolygonHeader = {

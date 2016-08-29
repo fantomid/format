@@ -29,12 +29,13 @@
  */
 package format.psx.cmp;
 import format.psx.cmp.Data;
+import format.psx.tim.Data;
 
 class Reader {
 
 	var i : haxe.io.Input;
 	var version : Int;
-
+  
 	public function new(i) {
 		this.i = i;
 		i.bigEndian = false;
@@ -47,22 +48,35 @@ class Reader {
 		return i.readUInt30();
 		#end
 	}
-	
+
 	public function read() : CMP {
 
     var timsNum = readInt();
-
-    trace("TIMs number " + timsNum);
-    var timsSizeArray = new Array<Int>();
+    var depackedFileSize = 0;
+    var filesSize = new Array<Int>();
     for(i in 0 ... timsNum)
     {
-      timsSizeArray[i] = readInt();
-      trace("TIM " + i + " size " + timsSizeArray[i]);
+      filesSize[i] = readInt();
+      depackedFileSize += filesSize[i];
     }
       
+    var tools = new format.psx.cmp.Tools();
+    var outputArray = tools.depackFile(i, filesSize, depackedFileSize);
+    
+    var tims : Array<TIM> = null;
+    if(outputArray.length > 0) 
+    {
+      tims = new Array<TIM>();
+      for(i in 0 ... outputArray.length)
+      {
+        tims[i] = new format.psx.tim.Reader(new haxe.io.BytesInput(outputArray[i])).read();
+        trace("array " + i + " size " + outputArray[i].length);
+      }
+    }
+
 		return {
       timsNum: timsNum,
-      tims: null
+      tims: tims
     }
 	}
 

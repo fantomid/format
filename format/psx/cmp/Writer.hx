@@ -2,7 +2,7 @@
  * format - haXe File Formats
  *
  *  CMP File Format
- *  Copyright (C) 2015 Guillaume Gasnier
+ *  Copyright (C) 2016 Guillaume Gasnier
  *
  * Copyright (c) 2009, The haXe Project Contributors
  * All rights reserved.

@@ -32,6 +32,8 @@ import format.psx.prm.Data;
 
 class Tools {
 
+  static public var s_ObjectNameNbBytes = 15;
+
 	static var polygonType_Unknown_00 = 0x00;
 	static var polygonType_Flat_Tris_Face_Color = 0x01;
 	static var polygonType_Textured_Tris_Face_Color = 0x02;
@@ -43,6 +45,14 @@ class Tools {
 	static var polygonType_Textured_Quad_Vertex_Color = 0x08;
 	static var polygonType_Sprite_Top_Anchor = 0x0A;
 	static var polygonType_Sprite_Bottom_Anchor = 0x0B;
+ 
+	static public function readInt(input: haxe.io.Input) {
+		#if haxe3
+		return input.readInt32();
+		#else
+		return input.readUInt30();
+		#end
+	}
  
   static public function toPolygonType(polygonType: Int) : PRMPolygonType {
     if(polygonType_Unknown_00 == polygonType)
