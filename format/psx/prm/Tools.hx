@@ -106,6 +106,32 @@ class Tools {
     throw "unknown PRM polygon type: " + polygonType;
   }
 
+  static public function createPolygonFrom(header: PolygonHeader, input: haxe.io.Input) : Polygon {
+    if(header.type == polygonType_Unknown_00)
+      return new UnknownPolygon(header, input);
+    if(header.type == polygonType_Flat_Tris_Face_Color)
+      return new FlatTrisFaceColorPolygon(header, input);
+    if(header.type == polygonType_Textured_Tris_Face_Color)
+      return new TexturedTrisFaceColorPolygon(header, input);
+    if(header.type == polygonType_Flat_Quad_Face_Color)
+      return new FlatQuadFaceColorPolygon(header, input);
+    if(header.type == polygonType_Textured_Quad_Face_Color)
+      return new TexturedQuadFaceColorPolygon(header, input);
+    if(header.type == polygonType_Flat_Tris_Vertex_Color)
+      return new FlatTrisVertexColorPolygon(header, input);
+    if(header.type == polygonType_Textured_Tris_Vertex_Color)
+      return new TexturedTrisVertexColorPolygon(header, input);
+    if(header.type == polygonType_Flat_Quad_Vertex_Color)
+      return new FlatQuadVertexColorPolygon(header, input);
+    if(header.type == polygonType_Textured_Quad_Vertex_Color)
+      return new TexturedQuadVertexColorPolygon(header, input);
+    if(header.type == polygonType_Sprite_Top_Anchor)
+      return new SpriteTopAnchorPolygon(header, input);
+    if(header.type == polygonType_Sprite_Bottom_Anchor)
+      return new SpriteBottomAnchorPolygon(header, input);
+    throw "unknown PRM polygon type: " + header.type;
+  }
+  
 }
 
 
