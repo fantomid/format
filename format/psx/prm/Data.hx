@@ -51,19 +51,19 @@ typedef PRM = {
 
 class Object {
   var header : ObjectHeader;
-  var vertrices : Array<Vertex>;
+  var vertices : Array<Vertex>;
   var polygons : Array<Polygon>;
   
   public function new(input: haxe.io.Input)
   {
     this.header = new ObjectHeader(input);
-    var num_vertrices = header.vertexCount;
-    if(num_vertrices > 0)
-      vertrices = new Array();
-    for(i in 0...num_vertrices)
+    var num_vertices = header.vertexCount;
+    if(num_vertices > 0)
+      vertices = new Array();
+    for(i in 0...num_vertices)
     {
       var v = new Vertex(input);
-      vertrices.push(v);
+      vertices.push(v);
     }
     var num_polygons = header.polygonCount;
     if(num_polygons > 0)
@@ -80,7 +80,7 @@ class Object {
   public function toString() {
     return "vertrices " + header.vertexCount +
       " polygons " + header.polygonCount +
-      " array vertrices count " + vertrices.length;
+      " array vertices count " + vertices.length;
   }  
 }
 
@@ -314,7 +314,6 @@ class SpriteTopAnchorPolygon extends Polygon
 
   public function new(header: PolygonHeader, input: haxe.io.Input)
   {
-    trace("SpriteTopAnchorPolygon");
     this.header = header;
     this.index = input.readUInt16();
     this.width = input.readUInt16();
