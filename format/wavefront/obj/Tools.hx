@@ -28,12 +28,284 @@
  * DAMAGE.
  */
 package format.wavefront.obj;
-
 import format.wavefront.obj.Data;
-import haxe.io.Bytes;
 
 class Tools {
+    var objsMap : Map<String, String -> ObjData>;
+    var decodeVertexDataStrings : Array<String> = ["vp", "vn", "vt", "v"];
+    var decodeElementsStrings : Array<String> = ["curv2", "curv", "surf", "f", "l", "p"];
+    var decodeGroupingStrings : Array<String> = ["mg", "g", "o", "s"];
+    var decodeDisplayOrRenderAttributesStrings : Array<String> = ["shadow_obj", "trace_obj", "c_interp", "d_interp", "usemtl", "mtllib", "bevel", "ctech", "stech", "lod"];
+	public function new() {
+    objsMap = new Map();
+    // Vertex datas
+    objsMap.set("v", createGeometricVertex);
+    objsMap.set("vp", createParameterSpaceVertex);
+    objsMap.set("vn", createVertexNormal);
+    objsMap.set("vt", createTextureVertex);
 
+    // Elements
+    objsMap.set("curv2", createCurve2d);
+    objsMap.set("curv", createCurve);
+    objsMap.set("surf", createSurface);
+    objsMap.set("f", createFace);
+    objsMap.set("l", createLine);
+    objsMap.set("p", createPoint);
+    
+    // Grouping
+    objsMap.set("mg", createMergingGroup);
+    objsMap.set("g", createGroupName);
+    objsMap.set("o", createObjectName);
+    objsMap.set("s", createSmoothingGroup);
+    
+    // Display or render attributes
+    objsMap.set("shadow_obj", createShadowCasting);
+    objsMap.set("trace_obj", createRayTracing);
+    objsMap.set("c_interp", createColorInterpolation);
+    objsMap.set("d_interp", createDissolveInterpolation);
+    objsMap.set("usemtl", createMaterialName);
+    objsMap.set("mtllib", createMaterialLibrary);
+    objsMap.set("bevel", createBevelInterpolation);
+    objsMap.set("ctech", createCurveApproximationTechnique);
+    objsMap.set("stech", createSurfaceApproximationTechnique);
+    objsMap.set("lod", createLevelOfDetail);
+  }
+
+  public function decode(data: String) : ObjData
+  {
+    var objData = decodeGrouping(data);
+    if(objData == null)
+    {
+      objData = decodeDisplayOrRenderAttributes(data);
+      if(objData == null)
+      {
+        objData = decodeVertexData(data);
+        if(objData == null)
+          objData = decodeElements(data);
+      }
+    }
+      
+    return objData;
+  }
+  
+  private function createObjData(objId: String, data: String) : ObjData
+  {
+    var objData : ObjData = null;
+    var fctCreate : String -> ObjData = objsMap.get(objId);
+    if(fctCreate != null)
+      objData = fctCreate (data);
+    return objData;
+  }
+  
+  private function decodeVertexData(data: String) : ObjData
+  {
+    var objData : ObjData = null;
+    for(idx in 0 ... decodeVertexDataStrings.length)
+    {
+      if(StringTools.startsWith(data, decodeVertexDataStrings[idx]))
+      {
+        objData = createObjData(decodeVertexDataStrings[idx], data);
+        break;
+      }
+    }
+
+    return objData;
+  }
+
+  private function decodeGrouping(data: String) : ObjData
+  {
+    var objData : ObjData = null;
+    for(idx in 0 ... decodeGroupingStrings.length)
+    {
+      if(StringTools.startsWith(data, decodeGroupingStrings[idx]))
+      {
+        objData = createObjData(decodeGroupingStrings[idx], data);
+        break;
+      }
+    }
+
+    return objData;
+  }
+  
+  private function decodeElements(data: String) : ObjData
+  {
+    var objData : ObjData = null;
+    for(idx in 0 ... decodeElementsStrings.length)
+    {
+      if(StringTools.startsWith(data, decodeElementsStrings[idx]))
+      {
+        objData = createObjData(decodeElementsStrings[idx], data);
+        break;
+      }
+    }    
+    
+    return objData;
+  }
+  
+  private function decodeDisplayOrRenderAttributes(data: String) : ObjData
+  {
+    var objData : ObjData = null;
+    for(idx in 0 ... decodeDisplayOrRenderAttributesStrings.length)
+    {
+      if(StringTools.startsWith(data, decodeDisplayOrRenderAttributesStrings[idx]))
+      {
+        objData = createObjData(decodeDisplayOrRenderAttributesStrings[idx], data);
+        break;
+      }
+    }    
+    
+    return objData;
+  }
+  
+  private function createGeometricVertex(data: String) : ObjData
+  {
+    trace("geometric vertex");
+    return new GeometricVertex(data);
+  }
+  
+  private function createParameterSpaceVertex(data: String) : ObjData
+  {
+    trace("parameter space vertex");
+    return new ParameterSpaceVertex(data);
+  }
+  
+  private function createVertexNormal(data: String) : ObjData
+  {
+    trace("vertex normal");
+    return new VertexNormal(data);
+  }
+  
+  private function createTextureVertex(data: String) : ObjData
+  {
+    trace("texture vertex");
+    return new TextureVertex(data);
+  }
+  
+  private function createSmoothingGroup(data: String) : ObjData
+  {
+    trace("smoothing group");
+    return new SmoothingGroup(data);
+  }
+  
+  private function createObjectName(data: String) : ObjData
+  {
+    trace("object name");
+    return new ObjectName(data);
+  }
+
+  private function createGroupName(data: String) : ObjData
+  {
+    trace("group name");
+    return new GroupName(data);
+  }
+
+  private function createMergingGroup(data: String) : ObjData
+  {
+    trace("merging group");
+    return new MergingGroup(data);
+  }
+  
+  private function createPoint(data: String) : ObjData
+  {
+    trace("point");
+    return new Point(data);
+  }
+  
+  private function createLine(data: String) : ObjData
+  {
+    trace("line");
+    return new Line(data);
+  }
+  
+  private function createFace(data: String) : ObjData
+  {
+    trace("face");
+    return new Face(data);
+  } 
+
+  private function createSurface(data: String) : ObjData
+  {
+    trace("surface");
+    return new Surface(data);
+  } 
+
+  private function createCurve(data: String) : ObjData
+  {
+    trace("curve");
+    return new Curve(data);
+  }
+  
+  private function createCurve2d(data: String) : ObjData
+  {
+    trace("curve2d");
+    return new Curve2d(data);
+  }
+  
+  private function createNotImplemented(data: String) : ObjData
+  {
+    throw "Not implemented";
+    return null;
+  }
+  
+  private function createBevelInterpolation(data: String) : ObjData
+  {
+    trace("bevel interpolation");
+    return new BevelInterpolation(data);
+  }
+  
+  private function createColorInterpolation(data: String) : ObjData
+  {
+    trace("color interpolation");
+    return new ColorInterpolation(data);
+  }
+  
+  private function createDissolveInterpolation(data: String) : ObjData
+  {
+    trace("dissolve interpolation");
+    return new DissolveInterpolation(data);
+  }
+
+  private function createLevelOfDetail(data: String) : ObjData
+  {
+    trace("level of detail");
+    return new LevelOfDetail(data);
+  }
+
+  private function createMaterialName(data: String) : ObjData
+  {
+    trace("material name");
+    return new MaterialName(data);
+  }
+  
+  private function createMaterialLibrary(data: String) : ObjData
+  {
+    trace("material library");
+    return new MaterialLibrary(data);
+  }
+  
+  private function createShadowCasting(data: String) : ObjData
+  {
+    trace("shadow casting");
+    return new ShadowCasting(data);
+  } 
+
+  private function createRayTracing(data: String) : ObjData
+  {
+    trace("ray tracing");
+    return new RayTracing(data);
+  }
+
+  private function createCurveApproximationTechnique(data: String) : ObjData
+  {
+    trace("curve approximation technique");
+    return new CurveApproximationTechnique(data);
+  }   
+
+  private function createSurfaceApproximationTechnique(data: String) : ObjData
+  {
+    trace("surface approximation technique");
+    return new SurfaceApproximationTechnique(data);
+  }   
 }
 
 

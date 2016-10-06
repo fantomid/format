@@ -49,9 +49,26 @@ class Reader {
 	}
 	
 	public function read() : OBJ {
-    throw "Not implemented";
-    
+    var line : String;
+    var tools = new format.wavefront.obj.Tools();
+    try {
+      while(true)
+      {
+        line = i.readLine();
+        var ltrimLine = StringTools.ltrim(line);
+        if(ltrimLine.length > 0)
+        {
+          var objData = tools.decode(ltrimLine);
+          if(objData != null)
+            trace (objData.toString());
+        }
+      }
+    }
+    catch(EndOfFile: haxe.io.Eof)
+    {
+      trace("End of file");
+    }
+
 		return null;
 	}
-
 }
