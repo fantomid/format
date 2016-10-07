@@ -28,6 +28,8 @@
  * DAMAGE.
  */
 package format.wavefront.obj;
+import format.wavefront.mtl.Data;
+import format.wavefront.mtl.Reader;
 
 enum ObjDataType {
 	ODT_Unknown;
@@ -59,7 +61,7 @@ enum ObjDataType {
 
 class ObjData
 {
-  var type : ObjDataType;
+  public var type : ObjDataType;
   
   public function toString() {
     return type+" -> ";
@@ -173,37 +175,58 @@ class ParameterSpaceVertex extends ObjData {
 
 class Point extends ObjData {
   
+  var points : Array<Int>;
   public function new(input: String)
   {
     this.type = ODT_ElementPoint;
+    var array = input.split(" ");
+    if(array.length < 2)
+      throw "Invalid number of point vertex values";
+    points = new Array();
+    for(i in 1 ... array.length)
+      points[i-1] = Std.parseInt(array[i]);
   }
   
   public override function toString() {
-    return super.toString() + "Point()";
+    return super.toString() + "Point( " + points.toString() + " )";
   }
 }
 
 class Line extends ObjData {
   
+  var lineDesc : Array<String>;
   public function new(input: String)
   {
     this.type = ODT_ElementLine;
+    var array = input.split(" ");
+    if(array.length < 3)
+      throw "Invalid number of line vertex values";
+    lineDesc = new Array();
+    for(i in 1 ... array.length)
+      lineDesc[i] = array[i];    
   }
   
   public override function toString() {
-    return super.toString() + "Line()";
+    return super.toString() + "Line( " + lineDesc.toString() + " )";
   }
 }
 
 class Face extends ObjData {
   
+  var faceDesc : Array<String>;
   public function new(input: String)
   {
     this.type = ODT_ElementFace;
+    var array = input.split(" ");
+    if(array.length < 4)
+      throw "Invalid number of face vertex values";
+    faceDesc = new Array();
+    for(i in 1 ... array.length)
+      faceDesc[i-1] = array[i];
   }
   
   public override function toString() {
-    return super.toString() + "Face()";
+    return super.toString() + "Face( " + faceDesc.toString() + " )";
   }
 }
 
@@ -355,6 +378,7 @@ class MaterialName  extends ObjData {
 
 class MaterialLibrary  extends ObjData {
   var materialLibraryName : String;
+  var materialLibrary : MTL;
   public function new(input: String)
   {
     this.type = ODT_DisplayRenderAttributesMaterialLibrary;
@@ -362,6 +386,10 @@ class MaterialLibrary  extends ObjData {
     if(array.length < 2)
       throw "Invalid number of material library values";    
     materialLibraryName = array[1];
+    /* TODO Return null actually */
+    var input_mtl = sys.io.File.read(materialLibraryName, true);
+    if(input_mtl != null)
+      materialLibrary = new format.wavefront.mtl.Reader(input_mtl).read();
   }
   
   public override function toString() {
@@ -416,8 +444,11 @@ class SurfaceApproximationTechnique  extends ObjData {
 typedef OBJ = {
 	var vertices : Array<GeometricVertex>;
   var normals : Array<VertexNormal>;
-  var texCoords : Array<TextureVertex>;
+  var textures : Array<TextureVertex>;
+  var faces : Array<Face>;
 }
 
-
+typedef OBJS = {
+  var arrayObj : Array<OBJ>;
+}
 

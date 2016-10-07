@@ -49,8 +49,6 @@ class Reader {
 	}
 	
 	public function read() : MTL {
-    throw "Not implemented";
-    
 		return null;
 	}
 

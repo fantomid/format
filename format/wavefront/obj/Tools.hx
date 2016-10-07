@@ -157,87 +157,73 @@ class Tools {
     return objData;
   }
   
-  private function createGeometricVertex(data: String) : ObjData
+  private function createGeometricVertex(data: String) : GeometricVertex
   {
-    trace("geometric vertex");
     return new GeometricVertex(data);
   }
   
   private function createParameterSpaceVertex(data: String) : ObjData
   {
-    trace("parameter space vertex");
     return new ParameterSpaceVertex(data);
   }
   
-  private function createVertexNormal(data: String) : ObjData
+  private function createVertexNormal(data: String) : VertexNormal
   {
-    trace("vertex normal");
     return new VertexNormal(data);
   }
   
-  private function createTextureVertex(data: String) : ObjData
+  private function createTextureVertex(data: String) : TextureVertex
   {
-    trace("texture vertex");
     return new TextureVertex(data);
   }
   
   private function createSmoothingGroup(data: String) : ObjData
   {
-    trace("smoothing group");
     return new SmoothingGroup(data);
   }
   
   private function createObjectName(data: String) : ObjData
   {
-    trace("object name");
     return new ObjectName(data);
   }
 
   private function createGroupName(data: String) : ObjData
   {
-    trace("group name");
     return new GroupName(data);
   }
 
   private function createMergingGroup(data: String) : ObjData
   {
-    trace("merging group");
     return new MergingGroup(data);
   }
   
   private function createPoint(data: String) : ObjData
   {
-    trace("point");
     return new Point(data);
   }
   
   private function createLine(data: String) : ObjData
   {
-    trace("line");
     return new Line(data);
   }
   
   private function createFace(data: String) : ObjData
   {
-    trace("face");
     return new Face(data);
   } 
 
   private function createSurface(data: String) : ObjData
   {
-    trace("surface");
     return new Surface(data);
   } 
 
   private function createCurve(data: String) : ObjData
   {
-    trace("curve");
     return new Curve(data);
   }
   
   private function createCurve2d(data: String) : ObjData
   {
-    trace("curve2d");
     return new Curve2d(data);
   }
   
@@ -249,61 +235,51 @@ class Tools {
   
   private function createBevelInterpolation(data: String) : ObjData
   {
-    trace("bevel interpolation");
     return new BevelInterpolation(data);
   }
   
   private function createColorInterpolation(data: String) : ObjData
   {
-    trace("color interpolation");
     return new ColorInterpolation(data);
   }
   
   private function createDissolveInterpolation(data: String) : ObjData
   {
-    trace("dissolve interpolation");
     return new DissolveInterpolation(data);
   }
 
   private function createLevelOfDetail(data: String) : ObjData
   {
-    trace("level of detail");
     return new LevelOfDetail(data);
   }
 
   private function createMaterialName(data: String) : ObjData
   {
-    trace("material name");
     return new MaterialName(data);
   }
   
   private function createMaterialLibrary(data: String) : ObjData
   {
-    trace("material library");
     return new MaterialLibrary(data);
   }
   
   private function createShadowCasting(data: String) : ObjData
   {
-    trace("shadow casting");
     return new ShadowCasting(data);
   } 
 
   private function createRayTracing(data: String) : ObjData
   {
-    trace("ray tracing");
     return new RayTracing(data);
   }
 
   private function createCurveApproximationTechnique(data: String) : ObjData
   {
-    trace("curve approximation technique");
     return new CurveApproximationTechnique(data);
   }   
 
   private function createSurfaceApproximationTechnique(data: String) : ObjData
   {
-    trace("surface approximation technique");
     return new SurfaceApproximationTechnique(data);
   }   
 }

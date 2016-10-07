@@ -51,16 +51,36 @@ class Reader {
 	public function read() : OBJ {
     var line : String;
     var tools = new format.wavefront.obj.Tools();
+    var vertices : Array<GeometricVertex> = new Array();
+    var normals : Array<VertexNormal> = new Array();
+    var textures : Array<TextureVertex> = new Array();
+    var faces : Array<Face> = new Array();
     try {
       while(true)
       {
         line = i.readLine();
-        var ltrimLine = StringTools.ltrim(line);
-        if(ltrimLine.length > 0)
+        var trimLine = StringTools.ltrim(line);
+        trimLine = StringTools.rtrim(trimLine);
+        if(trimLine.length > 0)
         {
-          var objData = tools.decode(ltrimLine);
+          var objData:Dynamic = tools.decode(trimLine);
           if(objData != null)
+          {
+            if(objData.type == ODT_GeometricVertex)
+              vertices.push(objData);
+            else
+              if(objData.type == ODT_VertexNormal)
+                normals.push(objData);
+            else
+              if(objData.type == ODT_TextureVertex)
+                textures.push(objData);
+            else
+              if(objData.type == ODT_ElementFace)
+                textures.push(objData);
+            else
+              trace("Doesn't take care of " + objData.type);
             trace (objData.toString());
+          }
         }
       }
     }
@@ -69,6 +89,11 @@ class Reader {
       trace("End of file");
     }
 
-		return null;
+		return {
+      vertices : vertices,
+      normals : normals,
+      textures : textures,
+      faces : faces
+    };
 	}
 }
