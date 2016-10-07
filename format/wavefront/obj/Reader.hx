@@ -51,11 +51,16 @@ class Reader {
 	public function read() : OBJ {
     var line : String;
     var tools = new format.wavefront.obj.Tools();
+    var arrayObj : Array<OBJ> = new Array();
     var vertices : Array<GeometricVertex> = new Array();
     var normals : Array<VertexNormal> = new Array();
     var textures : Array<TextureVertex> = new Array();
     var faces : Array<Face> = new Array();
+    var group : GroupName = null;
+    var name : ObjectName = null;
     try {
+      var bNewObj = false;
+      var obj : OBJ = null;
       while(true)
       {
         line = i.readLine();
@@ -78,6 +83,12 @@ class Reader {
               if(objData.type == ODT_ElementFace)
                 textures.push(objData);
             else
+              if(objData.type == ODT_GroupingGroupName)
+                group = objData;
+            else
+              if(objData.type == ODT_GroupingObjectName)
+                name = objData;
+            else
               trace("Doesn't take care of " + objData.type);
             trace (objData.toString());
           }
@@ -90,6 +101,8 @@ class Reader {
     }
 
 		return {
+      group : group,
+      name : name,
       vertices : vertices,
       normals : normals,
       textures : textures,

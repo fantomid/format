@@ -377,19 +377,25 @@ class MaterialName  extends ObjData {
 }
 
 class MaterialLibrary  extends ObjData {
-  var materialLibraryName : String;
-  var materialLibrary : MTL;
+  var materialLibraryName : Array<String>;
+  var materialLibrary : Array<MTL>;
   public function new(input: String)
   {
     this.type = ODT_DisplayRenderAttributesMaterialLibrary;
     var array = input.split(" ");
     if(array.length < 2)
-      throw "Invalid number of material library values";    
-    materialLibraryName = array[1];
-    /* TODO Return null actually */
-    var input_mtl = sys.io.File.read(materialLibraryName, true);
-    if(input_mtl != null)
-      materialLibrary = new format.wavefront.mtl.Reader(input_mtl).read();
+      throw "Invalid number of material library values";
+    materialLibraryName = new Array();
+    materialLibrary = new Array();
+    for(i in 1 ... array.length)
+    {
+      materialLibraryName[i-1] = array[i];
+      /* TODO Return null actually */
+      var input_mtl = sys.io.File.read(materialLibraryName[i-1], true);
+      if(input_mtl != null)
+        materialLibrary[i-1] = new format.wavefront.mtl.Reader(input_mtl).read();
+
+    }
   }
   
   public override function toString() {
@@ -442,6 +448,9 @@ class SurfaceApproximationTechnique  extends ObjData {
 }
 
 typedef OBJ = {
+  var group : GroupName;
+  var name : ObjectName;
+  /* TODO var material : MaterialName; */
 	var vertices : Array<GeometricVertex>;
   var normals : Array<VertexNormal>;
   var textures : Array<TextureVertex>;
@@ -449,6 +458,7 @@ typedef OBJ = {
 }
 
 typedef OBJS = {
+  var materialLibrary : MaterialLibrary;
   var arrayObj : Array<OBJ>;
 }
 
