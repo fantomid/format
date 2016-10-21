@@ -152,7 +152,7 @@ class Tools {
     for(i in 0 ... filesSize.length)
     {
       var tim = outputBytes.sub(offset, filesSize[i]);
-      offset = filesSize[i];
+      offset += filesSize[i];
       
       outputArray[i] = tim;
     }
