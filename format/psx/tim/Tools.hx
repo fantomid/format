@@ -102,11 +102,14 @@ class Tools {
     if(data.header.imageFormat == TF_Paletted_4_BPP)
     {
       pixels = Bytes.alloc(16);
-      var pixel1 = getPixel(data.palettes.getUInt16(pixelData & 0xf), pixelFmt);
-      var pixel2 = getPixel(data.palettes.getUInt16((pixelData >> 4) & 0xf), pixelFmt);
-      var pixel3 = getPixel(data.palettes.getUInt16((pixelData >> 8) & 0xf), pixelFmt);
-      var pixel4 = getPixel(data.palettes.getUInt16((pixelData >> 12) & 0xf), pixelFmt);
-      
+      var index = (pixelData & 0xf) * 2; // 2 bytes by color
+      var pixel1 = getPixel(data.palettes.getUInt16(index), pixelFmt);
+      index = ((pixelData >> 4) & 0xf) * 2;
+      var pixel2 = getPixel(data.palettes.getUInt16(index), pixelFmt);
+      index = ((pixelData >> 8) & 0xf) * 2;
+      var pixel3 = getPixel(data.palettes.getUInt16(index), pixelFmt);
+      index = ((pixelData >> 12) & 0xf) * 2;
+      var pixel4 = getPixel(data.palettes.getUInt16(index), pixelFmt);
       pixels.blit(0, pixel1, 0, pixel1.length);
       pixels.blit(4, pixel2, 0, pixel2.length);
       pixels.blit(8, pixel3, 0, pixel3.length);
@@ -153,7 +156,6 @@ class Tools {
 		var green: Int = ((color >> 5) & 0x1f) << 3; // G
 		var blue: Int = ((color >> 10) & 0x1f) << 3; // B
 		var alpha: Int = if(color == 0) 0; else 0xff; // A
-    
     if(format == PixelFormat_RGBA || format == PixelFormat_BGRA)
     {
       pixel = Bytes.alloc(4);
@@ -204,20 +206,14 @@ class Tools {
         }
         
         index_buffer += 2;
-        if(data.header.imageFormat == TF_Paletted_4_BPP)
+        switch(data.header.imageFormat)
         {
-          width += 4;
-        }
-        else
-        {
-          if(data.header.imageFormat == TF_Paletted_8_BPP)
-          {
+          case TF_Paletted_4_BPP:
+            width += 4;
+          case TF_Paletted_8_BPP:
             width += 2;
-          }
-          else
-          {
+          default:
             width ++;
-          }
         }
       }
       while(width < data.header.imageWidth);
