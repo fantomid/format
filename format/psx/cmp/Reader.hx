@@ -70,7 +70,6 @@ class Reader {
       for(i in 0 ... outputArray.length)
       {
         tims[i] = new format.psx.tim.Reader(new haxe.io.BytesInput(outputArray[i])).read();
-        trace("array " + i + " size " + outputArray[i].length);
       }
     }
 
