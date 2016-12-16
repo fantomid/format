@@ -48,7 +48,7 @@ class Reader {
 		#end
 	}
 	
-	public function read() : OBJ {
+	public function read() : OBJS {
     var line : String;
     var tools = new format.wavefront.obj.Tools();
     var arrayObj : Array<OBJ> = new Array();
@@ -58,9 +58,14 @@ class Reader {
     var faces : Array<Face> = new Array();
     var group : GroupName = null;
     var name : ObjectName = null;
+    var materialLibrary : MaterialLibrary = null;
+    var materialName : MaterialName = null;
+    var objs : OBJS = null;
     try {
       var bNewObj = false;
+      var objNumber : Int = 0;
       var obj : OBJ = null;
+      objs = new OBJS();
       while(true)
       {
         line = i.readLine();
@@ -81,13 +86,18 @@ class Reader {
                 textures.push(objData);
             else
               if(objData.type == ODT_ElementFace)
-                textures.push(objData);
+                faces.push(objData);
             else
               if(objData.type == ODT_GroupingGroupName)
                 group = objData;
             else
-              if(objData.type == ODT_GroupingObjectName)
-                name = objData;
+              if(objData.type == ODT_DisplayRenderAttributesMaterialName)
+                materialName = objData;
+            else
+              if(objData.type == ODT_DisplayRenderAttributesMaterialLibrary)
+              {
+                materialLibrary = objData;
+              }
             else
               trace("Doesn't take care of " + objData.type);
             trace (objData.toString());
@@ -100,13 +110,6 @@ class Reader {
       trace("End of file");
     }
 
-		return {
-      group : group,
-      name : name,
-      vertices : vertices,
-      normals : normals,
-      textures : textures,
-      faces : faces
-    };
+		return objs;
 	}
 }

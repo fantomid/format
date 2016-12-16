@@ -78,7 +78,7 @@ class Object {
   }
   
   public function toString() {
-    return "vertrices " + header.vertexCount +
+    return "vertices " + header.vertexCount +
       " polygons " + header.polygonCount +
       " array vertices count " + vertices.length;
   }  

@@ -57,6 +57,8 @@ enum ObjDataType {
   ODT_DisplayRenderAttributesRayTracing;
   ODT_DisplayRenderAttributesCurveApproximationTechnique;
   ODT_DisplayRenderAttributesSurfaceApproximationTechnique;
+  ODT_OBJ;
+  ODT_OBJArray;
 }
 
 class ObjData
@@ -284,7 +286,14 @@ class GroupName extends ObjData {
   public function new(input: String)
   {
     this.type = ODT_GroupingGroupName;
-    groupName = input.split(" ");
+    var array = input.split(" ");
+    if(array.length < 2)
+      throw "Invalid number of group name values";
+    groupName = new Array();
+    for(i in 1 ... array.length)
+    {
+      groupName[i-1] = array[i];
+    }
   }
   
   public override function toString() {
@@ -316,7 +325,7 @@ class MergingGroup extends ObjData {
   }
 }
   
-class BevelInterpolation  extends ObjData {
+class BevelInterpolation extends ObjData {
   public function new(input: String)
   {
     this.type = ODT_DisplayRenderAttributesBevelInterpolation;
@@ -327,7 +336,7 @@ class BevelInterpolation  extends ObjData {
   }
 }
   
-class ColorInterpolation  extends ObjData {
+class ColorInterpolation extends ObjData {
   public function new(input: String)
   {
     this.type = ODT_DisplayRenderAttributesColorInterpolation;
@@ -338,7 +347,7 @@ class ColorInterpolation  extends ObjData {
   }
 }
 
-class DissolveInterpolation  extends ObjData {
+class DissolveInterpolation extends ObjData {
   public function new(input: String)
   {
     this.type = ODT_DisplayRenderAttributesDissolveInterpolation;
@@ -349,7 +358,7 @@ class DissolveInterpolation  extends ObjData {
   }
 }
 
-class LevelOfDetail  extends ObjData {
+class LevelOfDetail extends ObjData {
   public function new(input: String)
   {
     this.type = ODT_DisplayRenderAttributesLevelOfDetail;
@@ -360,7 +369,7 @@ class LevelOfDetail  extends ObjData {
   }
 }
 
-class MaterialName  extends ObjData {
+class MaterialName extends ObjData {
   var materialName : String;
   public function new(input: String)
   {
@@ -376,7 +385,7 @@ class MaterialName  extends ObjData {
   }
 }
 
-class MaterialLibrary  extends ObjData {
+class MaterialLibrary extends ObjData {
   var materialLibraryName : Array<String>;
   var materialLibrary : Array<MTL>;
   public function new(input: String)
@@ -403,7 +412,7 @@ class MaterialLibrary  extends ObjData {
   }
 }
 
-class ShadowCasting  extends ObjData {
+class ShadowCasting extends ObjData {
   public function new(input: String)
   {
     this.type = ODT_DisplayRenderAttributesShadowCasting;
@@ -414,7 +423,7 @@ class ShadowCasting  extends ObjData {
   }
 }
 
-class RayTracing  extends ObjData {
+class RayTracing extends ObjData {
   public function new(input: String)
   {
     this.type = ODT_DisplayRenderAttributesRayTracing;
@@ -425,7 +434,7 @@ class RayTracing  extends ObjData {
   }
 }
 
-class CurveApproximationTechnique  extends ObjData {
+class CurveApproximationTechnique extends ObjData {
   public function new(input: String)
   {
     this.type = ODT_DisplayRenderAttributesCurveApproximationTechnique;
@@ -436,7 +445,7 @@ class CurveApproximationTechnique  extends ObjData {
   }
 }
 
-class SurfaceApproximationTechnique  extends ObjData {
+class SurfaceApproximationTechnique extends ObjData {
   public function new(input: String)
   {
     this.type = ODT_DisplayRenderAttributesSurfaceApproximationTechnique;
@@ -447,7 +456,7 @@ class SurfaceApproximationTechnique  extends ObjData {
   }
 }
 
-typedef OBJ = {
+class OBJ extends ObjData {
   var group : GroupName;
   var name : ObjectName;
   /* TODO var material : MaterialName; */
@@ -455,10 +464,18 @@ typedef OBJ = {
   var normals : Array<VertexNormal>;
   var textures : Array<TextureVertex>;
   var faces : Array<Face>;
+  public function new(input: String)
+  {
+    this.type = ODT_OBJ;
+  }
 }
 
-typedef OBJS = {
+class OBJS extends ObjData {
   var materialLibrary : MaterialLibrary;
   var arrayObj : Array<OBJ>;
+  public function new()
+  {
+    this.type = ODT_OBJArray;
+  }
 }
 
